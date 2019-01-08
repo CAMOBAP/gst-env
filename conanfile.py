@@ -118,7 +118,7 @@ class GstenvConan(ConanFile):
 
     def build(self):
         gst_plugin_system_path_1_0 = ";".join( [ os.path.join(self.deps_cpp_info[lib].rootpath, "lib", "gstreamer-1.0") for lib in 
-            ["gstreamer","gst-plugins-base","gst-plugins-good","gst-plugins-bad","gst-plugins-ugly","gst-rtsp-server"] ] )
+            ["gstreamer","gst-plugins-base","gst-plugins-good","gst-plugins-bad","gst-plugins-ugly","gst-rtsp-server","gst-libav"] ] )
         pkg_config_path = ";".join([ os.path.join(libpath, "pkgconfig") for libpath in self.deps_cpp_info.lib_paths ])
 
         replacements = {
