@@ -107,7 +107,6 @@ class GstenvConan(ConanFile):
         self.requires.add("spandsp/0.0.6@conanos/stable")
         self.requires.add("speex/1.2.0@conanos/stable")
         self.requires.add("sqlite3/3.21.0@conanos/stable")
-        self.requires.add("strawberryperl/5.26.0@conanos/stable")
         self.requires.add("taglib/1.11.1@conanos/stable")
         self.requires.add("wavpack/5.1.0@conanos/stable")
         self.requires.add("x264/0.152.r2854@conanos/stable")
@@ -117,23 +116,42 @@ class GstenvConan(ConanFile):
 
 
     def build(self):
-        gst_plugin_system_path_1_0 = ";".join( [ os.path.join(self.deps_cpp_info[lib].rootpath, "lib", "gstreamer-1.0") for lib in 
-            ["gstreamer","gst-plugins-base","gst-plugins-good","gst-plugins-bad","gst-plugins-ugly","gst-rtsp-server","gst-libav"] ] )
-        pkg_config_path = ";".join([ os.path.join(libpath, "pkgconfig") for libpath in self.deps_cpp_info.lib_paths ])
+        pass
+        #gst_plugin_system_path_1_0 = ";".join( [ os.path.join(self.deps_cpp_info[lib].rootpath, "lib", "gstreamer-1.0") for lib in 
+        #    ["gstreamer","gst-plugins-base","gst-plugins-good","gst-plugins-bad","gst-plugins-ugly","gst-rtsp-server","gst-libav"] ] )
+        #pkg_config_path = ";".join([ os.path.join(libpath, "pkgconfig") for libpath in self.deps_cpp_info.lib_paths ])
 
-        replacements = {
-            "%GST_PLUGIN_SYSTEM_PATH_1_0%" : gst_plugin_system_path_1_0,
-            "%GSTREAMER%"                  : self.deps_cpp_info["gstreamer"].rootpath,
-            "%GLIB_NETWORKING%"            : self.deps_cpp_info["glib-networking"].rootpath,
-            "%PKG_CONFIG_PATH%"            : pkg_config_path,
-            "%GST_PATH_1_0%"               : ";".join(self.deps_cpp_info.bin_paths),
-        }
-        tools.save(self.name+".bat", self.gst_bat)
-        for s, r in replacements.items():
-            tools.replace_in_file(self.name+".bat", s,r,strict=True)
+        #replacements = {
+        #    "%GST_PLUGIN_SYSTEM_PATH_1_0%" : gst_plugin_system_path_1_0,
+        #    "%GSTREAMER%"                  : self.deps_cpp_info["gstreamer"].rootpath,
+        #    "%GLIB_NETWORKING%"            : self.deps_cpp_info["glib-networking"].rootpath,
+        #    "%PKG_CONFIG_PATH%"            : pkg_config_path,
+        #    "%GST_PATH_1_0%"               : ";".join(self.deps_cpp_info.bin_paths),
+        #}
+        #tools.save(self.name+".bat", self.gst_bat)
+        #for s, r in replacements.items():
+        #    tools.replace_in_file(self.name+".bat", s,r,strict=True)
 
     def package(self):
-        self.copy(self.name+".bat", dst=os.path.join(self.package_folder),src=os.path.join(self.build_folder))
+        #self.copy(self.name+".bat", dst=os.path.join(self.package_folder),src=os.path.join(self.build_folder))
+        #--------------------------------------------------------------
+        for p in self.deps_cpp_info.rootpaths:
+            tools.out.info("COPYING : " + p)
+            self.copy("*", dst=self.package_folder, src=p, excludes=["conaninfo.txt","conanmanifest.txt","conanbuildinfo.txt"])
+        #--------------------------------------------------------------
+        gst_plugin_system_path_1_0 = os.path.join(self.package_folder, "lib", "gstreamer-1.0")
+        pkg_config_path =  os.path.join(self.package_folder, "lib", "pkgconfig")
+        replacements = {
+            "%GST_PLUGIN_SYSTEM_PATH_1_0%" : gst_plugin_system_path_1_0,
+            "%GSTREAMER%"                  : self.package_folder,
+            "%GLIB_NETWORKING%"            : self.package_folder,
+            "%PKG_CONFIG_PATH%"            : pkg_config_path,
+            "%GST_PATH_1_0%"               : os.path.join(self.package_folder, "bin"),
+        }
+        tools.save(os.path.join(self.package_folder, self.name+".bat"), self.gst_bat)
+        for s, r in replacements.items():
+            tools.replace_in_file(os.path.join(self.package_folder, self.name+".bat"), s,r,strict=True)
+        #---------------------------------------------------------------
 
     def package_info(self):
         pass
