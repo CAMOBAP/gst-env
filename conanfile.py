@@ -155,4 +155,7 @@ class GstenvConan(ConanFile):
 
     def package_info(self):
         pass
+	
+	#TEST
+	#gst-launch-1.0 rtspsrc location=rtsp://172.16.66.70/id=0 ! rtph264depay ! h264parse ! openh264dec ! d3dvideosink
 
